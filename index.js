@@ -44,3 +44,20 @@ client.once('ready', () => {
     console.log('Bot is ready!');
     setupScheduledRecordings();
 });
+
+// Schedule recordings
+function setupScheduledRecordings() {
+    schedule.scheduleJob('0 20 * * 1,3', () => checkAndStartRecording(SCA_CHANNEL_ID));
+    schedule.scheduleJob('0 14 * * 0', () => checkAndStartRecording(SCMA_CHANNEL_ID));
+}
+
+// Check for scheduled recordings
+async function checkAndStartRecording(channelId) {
+    const channel = await client.channels.fetch(channelId);
+    if (!channel) return;
+
+    const founderPresent = channel.members.some(member => member.roles.cache.has(FOUNDER_ROLE_ID));
+    if (founderPresent && !isRecording) {
+        startRecording(channel);
+    }
+}
