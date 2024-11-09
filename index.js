@@ -170,3 +170,76 @@ async function uploadToYoutube(RECORDING_CHANNEL_ID) {
         console.error('Error uploading to YouTube:', error);
     }
 }
+
+
+// Post link in appropriate channel
+async function postRecordingLink(RECORDING_CHANNEL_ID, videoId) {
+    // const postChannelId = originalChannelId === SCA_CHANNEL_ID ? SCA_RECORDING_CHANNEL_ID : SCMA_RECORDING_CHANNEL_ID;
+    
+    const channel = await client.channels.fetch(RECORDING_CHANNEL_ID);
+    
+    await channel.send(`New recording available: https://www.youtube.com/watch?v=${videoId}`);
+}
+
+// Function to check if a founder is in the specified voice channel
+async function checkFounderInVoiceChannel(guild, VOICE_CHANNEL_ID) {
+    const channel = guild.channels.cache.get(VOICE_CHANNEL_ID);
+
+    if (channel) {
+        const membersInChannel = channel.members;
+
+        // Check if any member in the channel has the founder role
+        const founderInChannel = membersInChannel.some(member => 
+            member.roles.cache.has(FOUNDER_ROLE_ID)
+        );
+
+        return founderInChannel;
+    }
+
+    return false; // Channel not found or not a voice channel
+}
+
+client.on('voiceStateUpdate', async (oldState, newState) => {
+    const guild = newState.guild;
+    const founderInChannel_SCA = await checkFounderInVoiceChannel(guild, SCA_CHANNEL_ID);
+    const founderInChannel_SCMA = await checkFounderInVoiceChannel(guild, SCMA_CHANNEL_ID);
+
+    const channelId = newState.channelId;
+
+    const wasInChannel = oldState.channelId !== null; // Check if the member was in a channel before
+    const isInChannel = newState.channelId !== null; // Check if the member is in a channel now
+
+
+    console.log('====================================');
+
+    console.log(newState.channelId);
+    console.log(oldState.channelId);
+    console.log(founderInChannel_SCA);
+    console.log(founderInChannel_SCMA);
+    
+    console.log('====================================');
+
+    if (channelId === SCA_CHANNEL_ID && founderInChannel_SCA  && !wasInChannel && isInChannel) {
+        if (!isRecording){
+            console.log("-------------------------start----------------------");
+            await startRecording(newState.channel);
+        }
+    } else if (oldState.channelId === SCA_CHANNEL_ID && !founderInChannel_SCA && wasInChannel && !isInChannel) {
+        if (isRecording){
+            console.log("-------------------------stop----------------------");
+            await stopRecording(SCA_RECORDING_CHANNEL_ID);
+        }
+    }
+    if (channelId === SCMA_CHANNEL_ID && founderInChannel_SCMA && !wasInChannel && isInChannel) {
+        if (!isRecording){
+            await startRecording(newState.channel);
+        }
+    } else if (oldState.channelId === SCMA_CHANNEL_ID && !founderInChannel_SCMA && wasInChannel && !isInChannel) {
+        if (isRecording){
+            await stopRecording(SCMA_RECORDING_CHANNEL_ID);
+        }
+    }
+
+});
+
+client.login(DISCORD_BOT_TOKEN);
