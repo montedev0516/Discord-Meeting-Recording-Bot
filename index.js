@@ -97,16 +97,6 @@ async function startRecording(channel) {
         });
 
         isRecording = true;
-
-        // // Monitor for founder leaving
-        // const interval = setInterval(async () => {
-        //     const updatedChannel = await client.channels.fetch(channel.id);
-        //     const founderStillPresent = updatedChannel.members.some(member => member.roles.cache.has(FOUNDER_ROLE_ID));
-        //     if (!founderStillPresent) {
-        //         clearInterval(interval);
-        //         await stopRecording(); // Make sure to await stopRecording
-        //     }
-        // }, 10000); // Check every 10 seconds
         
     } catch (error) {
         console.error('Error starting recording:', error);
