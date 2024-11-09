@@ -112,3 +112,30 @@ async function startRecording(channel) {
         console.error('Error starting recording:', error);
     }
 }
+
+// Stop recording logic
+async function stopRecording(RECORDING_CHANNEL_ID) {
+    if (isConnectionDestroyed) {
+        console.log("Voice connection is already destroyed.");
+        return; // Exit early if already destroyed
+    }
+
+    if (currentConnection) {
+        currentConnection.destroy(); // Ensure we destroy the connection if it's valid
+        isConnectionDestroyed = true; // Mark the connection as destroyed
+    }
+    
+    isRecording = false;
+    
+    if (recordingProcess) {
+        // recordingProcess.kill('SIGINT'); // Stop ffmpeg process
+        recordingProcess.stdin.write('q');
+        // recordingProcess.stdin.end();
+        console.log('Stopped recording');
+        
+        console.log(RECORDING_CHANNEL_ID);
+        
+        // Upload to YouTube after stopping the recording
+        // await uploadToYoutube(RECORDING_CHANNEL_ID); // Placeholder for upload function
+    }
+}
