@@ -139,3 +139,44 @@ async function stopRecording(RECORDING_CHANNEL_ID) {
         // await uploadToYoutube(RECORDING_CHANNEL_ID); // Placeholder for upload function
     }
 }
+
+// Upload video to YouTube
+async function uploadToYoutube(RECORDING_CHANNEL_ID) {
+    const auth = new google.auth.OAuth2(
+        YOUTUBE_CLIENT_ID,
+        YOUTUBE_CLIENT_SECRET,
+        YOUTUBE_REDIRECT_URI
+    );
+
+    auth.setCredentials({
+        refresh_token: YOUTUBE_REFRESH_TOKEN
+    });
+
+    const youtube = google.youtube({ version: 'v3', auth });
+
+    try {
+        const response = await youtube.videos.insert({
+            part: 'snippet,status',
+            requestBody: {
+                snippet: {
+                    title: `Community Call - ${new Date().toISOString()}`,
+                    description: 'Automatically recorded community call',
+                },
+                status: {
+                    privacyStatus: 'unlisted',
+                },
+            },
+            media: {
+                body: fs.createReadStream(recordingName), // Update with actual path based on naming convention
+            },
+        });
+
+        console.log('Video uploaded. ID:', response.data.id);
+        
+        // Post link in appropriate channel
+        await postRecordingLink(RECORDING_CHANNEL_ID, response.data.id); // Adjust as necessary
+        
+    } catch (error) {
+        console.error('Error uploading to YouTube:', error);
+    }
+}
