@@ -22,17 +22,17 @@ are made when necessary.
 # Setting Up the bot
 
 `
-: DISCORD_BOT_TOKEN(your created bot token)
-: FOUNDER_ROLE_ID(your server’s founder role ID)
-: SCA_CHANNEL_ID(SCA call room ID)
-: SCMA_CHANNEL_ID(SCMA call room ID)
-: SCA_RECORDING_CHANNEL_ID(SCA call recording history room ID)
-: SCMA_RECORDING_CHANNEL_ID(SCMA call recording history room ID)
+- DISCORD_BOT_TOKEN(your created bot token)
+- FOUNDER_ROLE_ID(your server’s founder role ID)
+- SCA_CHANNEL_ID(SCA call room ID)
+- SCMA_CHANNEL_ID(SCMA call room ID)
+- SCA_RECORDING_CHANNEL_ID(SCA call recording history room ID)
+- SCMA_RECORDING_CHANNEL_ID(SCMA call recording history room ID)
 `
 
 `
-: YOUTUBE_API_KEY
-: YOUTUBE_CHANNEL_ID
+- YOUTUBE_API_KEY
+- YOUTUBE_CHANNEL_ID
 `
 
 
